@@ -1,0 +1,100 @@
+Here’s a README file that documents the structure and functionality of the prepaid microchip refueling solution.
+
+---
+
+# Prepaid Microchip Refueling Solution
+
+This project provides a system for prepaid microchip refueling, allowing users to manage their refueling needs through a user-friendly interface, secure backend scripts, and a robust database design. It offers subscription plans, refueling simulation, transaction tracking, and an account dashboard.
+
+---
+
+## 1. User Interface (Frontend)
+
+- **Home Page**: This is the landing page, introducing the prepaid microchip refueling solution and showcasing the system’s benefits and usage process.
+  
+- **Activation Page**: A form that allows users to activate their prepaid microchip and link it to their preferred payment method.
+
+- **Refueling Page**: A mock interface that simulates the “Tap to Refuel” feature, triggering a backend PHP script to handle the refueling process.
+
+- **Pricing & Subscription Page**: Displays various prepaid plans with options for auto-refill and discounted rates.
+
+- **Account Dashboard**: A user dashboard to view the remaining balance, refueling history, and transaction summaries.
+
+---
+
+## 2. Backend (PHP)
+
+- **Account Management**: PHP scripts that handle user registration, login, and microchip activation.
+
+- **Refueling Simulation**: A script that simulates debiting the user’s account balance when they initiate a refuel.
+
+- **Subscription Plans**: Script for selecting and managing prepaid packages, with an option for auto-refill.
+
+- **Transaction History**: A script to log each refuel action, storing transaction details in a database for easy reference.
+
+---
+
+## 3. Database Design
+
+The database includes tables to manage user information, microchip details, refuel transactions, and subscription plans.
+
+### Database Tables
+
+1. **Users Table**
+   ```sql
+   CREATE TABLE users (
+       user_id INT AUTO_INCREMENT PRIMARY KEY,
+       username VARCHAR(50) UNIQUE NOT NULL,
+       password VARCHAR(255) NOT NULL
+   );
+   ```
+
+2. **Microchip Table**
+   ```sql
+   CREATE TABLE microchip (
+       chip_id VARCHAR(50) PRIMARY KEY,
+       user_id INT NOT NULL,
+       payment_method VARCHAR(50) NOT NULL,
+       card_number VARCHAR(20), -- Nullable for Visa/MasterCard
+       expiry_date VARCHAR(5), -- Nullable (e.g., MM/YY format)
+       ccv VARCHAR(4), -- Nullable for Visa/MasterCard
+       phone_number VARCHAR(15), -- Nullable for M-Pesa
+       balance DECIMAL(10,2) DEFAULT 100.00,
+       current_plan VARCHAR(50) DEFAULT 'Basic', -- Tracks current subscription plan
+       FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+   );
+   ```
+
+3. **Refuel Transactions Table**
+   ```sql
+   CREATE TABLE refuel_transactions (
+       transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+       user_id INT NOT NULL,
+       amount DECIMAL(10,2) NOT NULL,
+       transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+       FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+   );
+   ```
+
+4. **Subscription Plans Table**
+   ```sql
+   CREATE TABLE subscription_plans (
+       plan_id INT AUTO_INCREMENT PRIMARY KEY,
+       plan_name VARCHAR(50) UNIQUE NOT NULL,
+       credits INT NOT NULL,
+       price DECIMAL(10,2) NOT NULL
+   );
+   ```
+
+### Insert Default Subscription Plans
+Populate the **subscription_plans** table with predefined packages:
+```sql
+INSERT INTO subscription_plans (plan_name, credits, price) VALUES
+('Basic', 50, 50.00),
+('Standard', 110, 100.00),
+('Premium', 250, 200.00);
+```
+
+---
+
+.
